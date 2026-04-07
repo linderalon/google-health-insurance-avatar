@@ -7,6 +7,7 @@ import react from '@vitejs/plugin-react';
 // Add basicSsl() and https:true only when testing on a non-localhost hostname.
 export default defineConfig({
   plugins: [react()],
+  base: '/google-health-insurance-avatar/',
   server: {
     port: 5173,
     proxy: {
