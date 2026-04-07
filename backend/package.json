@@ -1,0 +1,19 @@
+{
+  "name": "healthcare-demo-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "NODE_EXTRA_CA_CERTS=./certs/ca-bundle.pem node server.js",
+    "dev":   "NODE_EXTRA_CA_CERTS=./certs/ca-bundle.pem node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

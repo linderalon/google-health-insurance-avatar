@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demo Guide — Healthcare Avatar Discharge Portal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .page { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* header */
+    .hero {
+      background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+      border-radius: 1rem;
+      padding: 2.5rem 2rem;
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+    .hero h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .hero p  { opacity: 0.85; font-size: 0.95rem; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.2); border-radius: 999px;
+      padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* cards */
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .card h2 {
+      font-size: 1.05rem; font-weight: 600;
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 1rem; padding-bottom: 0.6rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #0ea5e9; color: #fff;
+      font-size: 0.8rem; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .icon { font-size: 1.2rem; }
+
+    /* url chip */
+    .url-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: #f0f9ff; border: 1px solid #bae6fd;
+      border-radius: 0.5rem; padding: 0.6rem 1rem;
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 0.9rem; color: #0369a1; font-weight: 600;
+      text-decoration: none; transition: background 0.15s;
+    }
+    .url-chip:hover { background: #e0f2fe; }
+    .url-chip .arrow { font-size: 1rem; }
+
+    /* steps */
+    ol.steps { padding-left: 0; list-style: none; }
+    ol.steps li {
+      display: flex; gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f8fafc;
+    }
+    ol.steps li:last-child { border-bottom: none; }
+    .step-body strong { display: block; font-size: 0.9rem; }
+    .step-body span   { font-size: 0.82rem; color: #64748b; }
+
+    /* warning box */
+    .warn {
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 0.75rem; padding: 1rem 1.25rem;
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+    .warn-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .warn p { font-size: 0.85rem; color: #92400e; }
+    .warn code { background: #fef3c7; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 0.8rem; }
+
+    /* code block */
+    pre {
+      background: #0f172a; color: #e2e8f0;
+      border-radius: 0.5rem; padding: 1rem;
+      font-family: 'Menlo', 'Courier New', monospace;
+      font-size: 0.8rem; overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    /* architecture */
+    .arch {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .arch-box {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem;
+      padding: 0.75rem; text-align: center;
+    }
+    .arch-box .port { font-size: 0.7rem; color: #94a3b8; margin-bottom: 0.2rem; }
+    .arch-box .name { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+    .arch-box .tech { font-size: 0.7rem; color: #64748b; margin-top: 0.15rem; }
+
+    /* table */
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: #f1f5f9; text-align: left; padding: 0.5rem 0.75rem; font-weight: 600; }
+    td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f5f9; }
+    tr:last-child td { border-bottom: none; }
+    .speech-text { font-style: italic; color: #475569; }
+
+    footer {
+      text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge"><span class="dot"></span> All services running</div>
+    <h1>🏥 Healthcare Avatar Discharge Portal</h1>
+    <p>Demo guide — Kaltura Avatar + A2UI v0.8 + Google ADK + Gemini 2.5</p>
+  </div>
+
+  <!-- Launch link -->
+  <div class="card">
+    <h2><span class="icon">🚀</span> Open the demo app</h2>
+    <a href="http://localhost:5173/" target="_blank" class="url-chip">
+      <span>http://localhost:5173</span>
+      <span class="arrow">↗</span>
+    </a>
+    <p style="font-size:0.82rem;color:#64748b;margin-top:0.75rem;">
+      Runs over plain HTTP — no certificate warning. Browsers grant WebRTC
+      <strong>Secure Context</strong> permissions to <code>localhost</code> automatically,
+      so the Kaltura avatar stream works without HTTPS in local dev.
+    </p>
+  </div>
+
+  <!-- Architecture overview -->
+  <div class="card">
+    <h2><span class="icon">🏗</span> What's running</h2>
+    <div class="arch">
+      <div class="arch-box">
+        <div class="port">:8000</div>
+        <div class="name">ADK Agent</div>
+        <div class="tech">Python · Gemini 2.5-Flash</div>
+      </div>
+      <div class="arch-box">
+        <div class="port">:3001</div>
+        <div class="name">Express Backend</div>
+        <div class="tech">Node.js · Secure KS proxy</div>
+      </div>
+      <div class="arch-box">
+        <div class="port">:5173</div>
+        <div class="name">React Frontend</div>
+        <div class="tech">Vite · HTTPS · Tailwind</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TURN prerequisite warning -->
+  <div class="warn">
+    <span class="warn-icon">🔒</span>
+    <div>
+      <p><strong>Firewall prerequisite for live Kaltura avatar WebRTC:</strong></p>
+      <p style="margin-top:0.35rem;">
+        Whitelist TURN server IP range <code>3.41.177.176/29</code>
+        (IPs 3.41.177.176 – 3.41.177.183) on
+        <code>UDP/TCP 443</code> and <code>UDP/TCP 80</code> outbound.
+        Without this rule, the WebRTC connection will fail behind corporate NAT/firewalls.
+        For local testing on a home network this is usually not needed.
+      </p>
+    </div>
+  </div>
+
+  <!-- Step-by-step demo flow -->
+  <div class="card">
+    <h2><span class="step-num">1</span> Start the Avatar Session</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num" style="background:#94a3b8;">a</span>
+        <div class="step-body">
+          <strong>Open https://localhost:5173</strong>
+          <span>You'll see a two-panel layout — avatar on the left, form area on the right.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">b</span>
+        <div class="step-body">
+          <strong>Click "Start Session" in the avatar panel</strong>
+          <span>The backend calls Kaltura with your KS, gets a sessionId + JWT token, and
+          the Kaltura SDK establishes a WebRTC connection. The avatar video appears.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">c</span>
+        <div class="step-body">
+          <strong>Wait for the status dot to turn green ("Live")</strong>
+          <span>This means WebRTC is established and the avatar is ready to speak.</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2><span class="step-num">2</span> Load the Discharge Form</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num" style="background:#94a3b8;">a</span>
+        <div class="step-body">
+          <strong>Click "Load Discharge Form"</strong>
+          <span>The React frontend opens a POST SSE connection to
+          <code>/api/agent/discharge-form/stream</code>, which proxies to the Gemini-powered
+          ADK agent on :8000.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">b</span>
+        <div class="step-body">
+          <strong>Watch the form build progressively (4 waves)</strong>
+          <span>Form title and section headers appear instantly after Wave 1.
+          Patient fields, discharge fields, medications, and follow-up load in sequence
+          — each wave is a separate A2UI <code>surfaceUpdate</code> message.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">c</span>
+        <div class="step-body">
+          <strong>Listen — Alex narrates each section as it appears</strong>
+          <span>Each wave embeds a <code>KalturaAvatarView</code> component with a
+          <code>spokenText</code> literalString. As the component arrives, the frontend
+          calls <code>session.sayText()</code> and the avatar speaks the guidance aloud.</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Speech timeline -->
+  <div class="card">
+    <h2><span class="icon">🔊</span> Avatar speech timeline</h2>
+    <table>
+      <thead><tr><th>Wave</th><th>What appears on screen</th><th>What Alex says</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Wave 1</strong></td>
+          <td>Form title + 4 section headers</td>
+          <td class="speech-text">"Welcome to your digital discharge process. I'm Alex, your discharge guide…"</td>
+        </tr>
+        <tr>
+          <td><strong>Wave 2</strong></td>
+          <td>Patient name, DOB, MRN, admission date, physician, diagnosis fields</td>
+          <td class="speech-text">"Please fill in your patient details. Make sure your name, date of birth…"</td>
+        </tr>
+        <tr>
+          <td><strong>Wave 3</strong></td>
+          <td>Discharge date, condition, destination, notes + medication list</td>
+          <td class="speech-text">"Now let's review your discharge details and medication schedule…"</td>
+        </tr>
+        <tr>
+          <td><strong>Wave 4</strong></td>
+          <td>Follow-up date, physician, instructions, acknowledgment checkbox, submit button</td>
+          <td class="speech-text">"Almost done. Please confirm your follow-up appointment…"</td>
+        </tr>
+        <tr>
+          <td><strong>Submit</strong></td>
+          <td>Form resets</td>
+          <td class="speech-text">"Thank you. Your discharge form has been submitted. A member of the care team will be with you shortly."</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Interactive demo -->
+  <div class="card">
+    <h2><span class="step-num">3</span> Fill in the form &amp; submit</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-num" style="background:#94a3b8;">a</span>
+        <div class="step-body">
+          <strong>Enter patient data in any field</strong>
+          <span>All fields write to a local data model in real-time
+          (A2UI's "Write contract"). No network call until the form is submitted.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">b</span>
+        <div class="step-body">
+          <strong>Select discharge condition and destination</strong>
+          <span>MultipleChoice pill buttons — click to select one option.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">c</span>
+        <div class="step-body">
+          <strong>Review the pre-populated medication (Lisinopril)</strong>
+          <span>Rendered via a template-bound List — one Card per item in
+          <code>/medications</code> array.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">d</span>
+        <div class="step-body">
+          <strong>Check the acknowledgment box</strong>
+          <span>Boolean binding to <code>/acknowledgment/confirmed</code>.</span>
+        </div>
+      </li>
+      <li>
+        <span class="step-num" style="background:#94a3b8;">e</span>
+        <div class="step-body">
+          <strong>Click "Confirm Discharge"</strong>
+          <span>A2UI fires the <code>confirm_discharge</code> action with the full data model
+          as context. Alex speaks a confirmation. The form resets and is ready for the
+          next patient.</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Kaltura Avatar Link -->
+  <div class="card">
+    <h2><span class="icon">🎭</span> Kaltura Avatar direct link (standalone test)</h2>
+    <p style="font-size:0.85rem;margin-bottom:0.75rem;">
+      To test the avatar persona (DPP) independently — without the discharge form:
+    </p>
+    <a href="https://meet.avatar.us.kaltura.ai/695cd19880ea19bd1b816a08/talk-to-agent?aiclid=gSpoHQZZ&flow_id=agent-88"
+       target="_blank" class="url-chip">
+      <span>meet.avatar.us.kaltura.ai → Alex (Healthcare Guide)</span>
+      <span class="arrow">↗</span>
+    </a>
+    <p style="font-size:0.8rem;color:#64748b;margin-top:0.6rem;">
+      The DPP configures Alex as a compassionate Patient Discharge Guide. He will greet
+      you, guide you through the form sections, and answer questions without giving medical advice.
+    </p>
+  </div>
+
+  <!-- Useful endpoints -->
+  <div class="card">
+    <h2><span class="icon">🔗</span> Useful service endpoints</h2>
+    <table>
+      <thead><tr><th>URL</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><a href="http://localhost:3001/health" target="_blank">localhost:3001/health</a></td><td>Express health check</td></tr>
+        <tr><td><a href="http://localhost:8000/list-apps" target="_blank">localhost:8000/list-apps</a></td><td>ADK registered agents</td></tr>
+        <tr><td><code>POST localhost:3001/api/agent/discharge-form/stream</code></td><td>SSE A2UI stream (agent endpoint)</td></tr>
+        <tr><td><code>POST localhost:3001/api/avatar/session</code></td><td>Create Kaltura avatar session</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="card">
+    <h2><span class="icon">🛠</span> Troubleshooting</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Avatar video never loads / "Connection failed"</td>
+          <td>Check TURN IP range <code>3.41.177.176/29</code> is whitelisted on UDP/TCP 443+80. Ensure you're on HTTPS (not HTTP).</td>
+        </tr>
+        <tr>
+          <td>Certificate warning on first open</td>
+          <td>Expected for self-signed dev cert. Click <strong>Advanced → Proceed to localhost</strong>.</td>
+        </tr>
+        <tr>
+          <td>Form never loads / "event: error" in console</td>
+          <td>ADK agent may be down. Check <code>http://localhost:8000/list-apps</code> — should return <code>["agent","routes"]</code>.</td>
+        </tr>
+        <tr>
+          <td>Gemini 429 quota errors</td>
+          <td>Free-tier daily limit hit. Switch model in <code>backend/agent/agent.py</code> or wait ~1 hour.</td>
+        </tr>
+        <tr>
+          <td>CORS error in browser console</td>
+          <td>Ensure <code>backend/.env</code> ALLOWED_ORIGINS includes <code>https://localhost:5173</code>.</td>
+        </tr>
+        <tr>
+          <td>"KALTURA_KS is not set" on backend start</td>
+          <td>Add your real Kaltura Session key to <code>backend/.env</code>. Get it from your Kaltura representative.</td>
+        </tr>
+        <tr>
+          <td>Alex doesn't speak</td>
+          <td>Avatar session must be in READY state before form loads. Start Session first, then Load Discharge Form.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Quick restart -->
+  <div class="card">
+    <h2><span class="icon">⟳</span> Restart all services</h2>
+    <pre>cd ~/google\ project
+./start-dev.sh</pre>
+    <p style="font-size:0.8rem;color:#64748b;margin-top:0.6rem;">
+      Or kill only the processes:
+    </p>
+    <pre>pkill -f "adk api_server"; pkill -f "node server.js"; pkill -f "vite"</pre>
+  </div>
+
+  <footer>
+    Healthcare Avatar Discharge Portal · Built with Kaltura Avatar SDK, A2UI v0.8, Google ADK, Gemini 2.5-Flash, React 18, Vite, Tailwind CSS
+  </footer>
+
+</div>
+</body>
+</html>
