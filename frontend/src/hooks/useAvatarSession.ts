@@ -37,7 +37,7 @@ export function useAvatarSession(_containerId: string) {
     function onMessage(event: MessageEvent) {
       if (event.data?.issuer !== 'eself-conversation-events') return;
       const evt = event.data.event as string;
-      if (evt === 'showing-agent') { setAvatarState('ready'); injectDPP(); }
+if (evt === 'showing-agent') { setAvatarState('ready'); injectDPP(); }
       if (evt === 'conversation-ended') setAvatarState('idle');
     }
     window.addEventListener('message', onMessage);
