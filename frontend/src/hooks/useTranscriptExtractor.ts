@@ -3,10 +3,11 @@ import { useCallback, useEffect, useRef } from 'react';
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data from a conversation.
+const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data from a conversation between Jordan (the insurance agent) and the Patient.
 
 RULES:
-- Only extract information EXPLICITLY stated by the claimant. Never infer or assume.
+- Use Jordan's questions as context to understand what field the Patient is answering.
+- Only extract information EXPLICITLY stated by the Patient. Never infer or assume.
 - Dates must be formatted YYYY-MM-DD.
 - Dollar amounts: extract numbers only, no $ symbol (e.g. "250" not "$250").
 - For referral (boolean field): "yes" → "true", "no" → "false".
@@ -118,7 +119,11 @@ export function useTranscriptExtractor(
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.data?.issuer !== 'eself-conversation-events') return;
-      if (event.data.event !== 'user-transcription') return;
+
+      const evt = event.data.event as string;
+      const isUser  = evt === 'user-transcription';
+      const isAgent = evt === 'agent-transcription';
+      if (!isUser && !isAgent) return;
 
       const raw = event.data?.data;
       const text: string =
@@ -126,11 +131,15 @@ export function useTranscriptExtractor(
 
       if (!text.trim()) return;
 
-      linesRef.current.push(`Patient: ${text.trim()}`);
-      if (linesRef.current.length > 20) linesRef.current.shift();
+      const speaker = isUser ? 'Patient' : 'Jordan';
+      linesRef.current.push(`${speaker}: ${text.trim()}`);
+      if (linesRef.current.length > 40) linesRef.current.shift();
 
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(extractNow, 500);
+      // Only trigger extraction after the patient speaks
+      if (isUser) {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(extractNow, 500);
+      }
     }
 
     window.addEventListener('message', onMessage);
