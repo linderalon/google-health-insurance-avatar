@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { DPP } from '../dpp';
 
 export type AvatarState = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -8,27 +9,18 @@ export function useAvatarSession(_containerId: string) {
 
   // ── Inject DPP into the eself widget ─────────────────────────────────────
 
-  const injectDPP = useCallback(async () => {
+  const injectDPP = useCallback(() => {
     if (dppSentRef.current) return;
-    try {
-      const res = await fetch('/api/avatar/dpp');
-      if (!res.ok) return;
-      const dpp = await res.json();
-
-      // Small delay so the widget is fully ready before receiving the prompt
-      setTimeout(() => {
-        const msg = { type: 'eself-dynamic-prompt-message', content: JSON.stringify(dpp) };
-        // Post to all iframes (the widget creates one internally)
-        document.querySelectorAll('iframe').forEach(f => {
-          try { f.contentWindow?.postMessage(msg, '*'); } catch { /* cross-origin, skip */ }
-        });
-        window.postMessage(msg, '*');
-        dppSentRef.current = true;
-        console.log('[avatar] DPP injected — Alex will guide field by field');
-      }, 800);
-    } catch (e) {
-      console.warn('[avatar] DPP inject failed:', e);
-    }
+    // Small delay so the widget is fully ready before receiving the prompt
+    setTimeout(() => {
+      const msg = { type: 'eself-dynamic-prompt-message', content: JSON.stringify(DPP) };
+      document.querySelectorAll('iframe').forEach(f => {
+        try { f.contentWindow?.postMessage(msg, '*'); } catch { /* cross-origin, skip */ }
+      });
+      window.postMessage(msg, '*');
+      dppSentRef.current = true;
+      console.log('[avatar] DPP injected — Jordan will guide field by field');
+    }, 800);
   }, []);
 
   // ── Listen for widget events ───────────────────────────────────────────────
