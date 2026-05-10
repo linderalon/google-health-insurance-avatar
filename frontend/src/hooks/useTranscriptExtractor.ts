@@ -7,7 +7,8 @@ const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data
 
 RULES:
 - Use Jordan's questions as context to understand what field the Patient is answering.
-- Only extract information EXPLICITLY stated by the Patient. Never infer or assume.
+- The Patient may go off-script (ask questions, express concerns) before answering. Use the full transcript to determine what Jordan last asked about, then map the Patient's eventual answer to that field.
+- Only extract information EXPLICITLY stated by the Patient as an answer. Ignore Patient questions or clarification requests.
 - Dates must be formatted YYYY-MM-DD.
 - Dollar amounts: extract numbers only, no $ symbol (e.g. "250" not "$250").
 - For referral (boolean field): "yes" → "true", "no" → "false".
@@ -63,12 +64,20 @@ const RESPONSE_SCHEMA = {
 export function useTranscriptExtractor(
   onFieldUpdate: (path: string, value: unknown) => void,
 ) {
-  const linesRef = useRef<string[]>([]);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const busyRef  = useRef(false);
+  const linesRef   = useRef<string[]>([]);
+  const timerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const busyRef    = useRef(false);
+  const pendingRef = useRef(false);
 
   const extractNow = useCallback(async () => {
-    if (busyRef.current || linesRef.current.length === 0) return;
+    if (linesRef.current.length === 0) return;
+
+    // If a Gemini call is already in flight, mark that we need another pass
+    // after it finishes rather than silently dropping this extraction.
+    if (busyRef.current) {
+      pendingRef.current = true;
+      return;
+    }
 
     const apiKey = import.meta.env.VITE_GOOGLE_API_KEY as string | undefined;
     if (!apiKey) {
@@ -78,9 +87,10 @@ export function useTranscriptExtractor(
 
     busyRef.current = true;
     const transcript = linesRef.current.join('\n');
+    const lastPatientLine = [...linesRef.current].reverse().find(l => l.startsWith('Patient:')) ?? '';
 
     try {
-      const prompt = `${SYSTEM_PROMPT}\n\nConversation transcript:\n${transcript}\n\nExtract any claim fields clearly stated:`;
+      const prompt = `${SYSTEM_PROMPT}\n\nConversation transcript:\n${transcript}\n\nThe patient's most recent statement is: "${lastPatientLine}"\n\nExtract any claim fields clearly stated, paying close attention to what Jordan last asked before this statement:`;
 
       const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
         method: 'POST',
@@ -113,6 +123,11 @@ export function useTranscriptExtractor(
       console.warn('[extractor] failed:', e);
     } finally {
       busyRef.current = false;
+      // If a new utterance arrived while we were busy, run again now
+      if (pendingRef.current) {
+        pendingRef.current = false;
+        extractNow();
+      }
     }
   }, [onFieldUpdate]);
 
