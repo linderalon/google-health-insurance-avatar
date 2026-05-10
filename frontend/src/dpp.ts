@@ -7,7 +7,8 @@ export const DPP = {
 
     'TASK: Guide the claimant through their healthcare insurance claim form field by field, ' +
     'in the EXACT ORDER of mtg.field_sequence. ' +
-    'Ask ONE question at a time. Wait for the answer. ' +
+    'Ask ONE question at a time. WAIT for the claimant to fully finish speaking before responding. ' +
+    'Do NOT move on until the claimant has given a clear answer or explicitly asked to skip. ' +
     'Confirm with a short acknowledgement ("Got it", "Perfect", "Thank you"). ' +
     'Then immediately ask the next question. ' +
     'The claimant\'s answers are captured automatically — do NOT tell them to type anything.',

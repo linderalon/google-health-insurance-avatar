@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data from a conversation between Jordan (the insurance agent) and the Patient.
 
@@ -86,10 +86,8 @@ export function useTranscriptExtractor(
     }
 
     busyRef.current = true;
-    // Send only the last 12 lines — enough context without bloating the request
-    const recentLines = linesRef.current.slice(-12);
-    const transcript = recentLines.join('\n');
-    const lastPatientLine = [...recentLines].reverse().find(l => l.startsWith('Patient:')) ?? '';
+    const transcript = linesRef.current.join('\n');
+    const lastPatientLine = [...linesRef.current].reverse().find(l => l.startsWith('Patient:')) ?? '';
 
     try {
       const prompt = `${SYSTEM_PROMPT}\n\nConversation transcript:\n${transcript}\n\nThe patient's most recent statement is: "${lastPatientLine}"\n\nExtract any claim fields clearly stated, paying close attention to what Jordan last asked before this statement:`;
@@ -103,7 +101,6 @@ export function useTranscriptExtractor(
             responseMimeType: 'application/json',
             responseSchema: RESPONSE_SCHEMA,
             temperature: 0,
-            thinkingConfig: { thinkingBudget: 0 },
           },
         }),
       });
