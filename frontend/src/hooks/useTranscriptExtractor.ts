@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data from a conversation between Jordan (the insurance agent) and the Patient.
 
@@ -17,12 +17,12 @@ RULES:
 AVAILABLE FIELDS (use these exact paths):
   /policyholder/fullName          Policyholder's full name
   /policyholder/dateOfBirth       Date of birth (YYYY-MM-DD)
-  /policyholder/policyNumber      Insurance policy number
-  /policyholder/memberId          Member ID on insurance card
-  /policyholder/insuranceProvider Name of insurance company
+  /policyholder/policyNumber      Insurance policy number (on the insurance card)
+  /policyholder/memberId          Member ID (on the insurance card)
+  /policyholder/insuranceProvider Name of the insurance COMPANY (e.g. Blue Cross, Maccabi, Aetna) — NOT the doctor or clinic
   /claim/type                     Claim type (medical/dental/vision/prescription/mental_health)
   /claim/serviceDate              Date of service or treatment (YYYY-MM-DD)
-  /claim/providerName             Doctor, clinic, or facility name
+  /claim/providerName             Name of the DOCTOR, CLINIC, or FACILITY that gave treatment — NOT the insurance company
   /claim/providerLocation         Provider address or location
   /claim/diagnosis                Diagnosis or medical condition
   /claim/treatmentDescription     Treatment or procedure description
@@ -86,8 +86,10 @@ export function useTranscriptExtractor(
     }
 
     busyRef.current = true;
-    const transcript = linesRef.current.join('\n');
-    const lastPatientLine = [...linesRef.current].reverse().find(l => l.startsWith('Patient:')) ?? '';
+    // Send only the last 12 lines — enough context without bloating the request
+    const recentLines = linesRef.current.slice(-12);
+    const transcript = recentLines.join('\n');
+    const lastPatientLine = [...recentLines].reverse().find(l => l.startsWith('Patient:')) ?? '';
 
     try {
       const prompt = `${SYSTEM_PROMPT}\n\nConversation transcript:\n${transcript}\n\nThe patient's most recent statement is: "${lastPatientLine}"\n\nExtract any claim fields clearly stated, paying close attention to what Jordan last asked before this statement:`;
