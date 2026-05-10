@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent';
 
 const SYSTEM_PROMPT = `You are an insurance form assistant extracting claim data from a conversation between Jordan (the insurance agent) and the Patient.
 
@@ -103,6 +103,7 @@ export function useTranscriptExtractor(
             responseMimeType: 'application/json',
             responseSchema: RESPONSE_SCHEMA,
             temperature: 0,
+            thinkingConfig: { thinkingBudget: 0 },
           },
         }),
       });
